@@ -1,3 +1,4 @@
+import { API_URL } from '../../config';
 import { useState } from 'react';
 import axios from 'axios';
 
@@ -13,7 +14,7 @@ const Login = ({ onLogin }) => {
     setLoading(true);
     
     try {
-      const res = await axios.post('http://localhost:5000/api/login', { username, password });
+      const res = await axios.post(``, { username, password });
       onLogin(res.data.token);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to login');

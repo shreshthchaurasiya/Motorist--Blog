@@ -1,3 +1,4 @@
+import { API_URL } from '../../config';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Trash2, Upload, UserCircle2, Edit2, Check, X } from 'lucide-react';
@@ -17,9 +18,9 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       const [blogsRes, adminRes, notifRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/blogs'),
-        axios.get('http://localhost:5000/api/me', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('http://localhost:5000/api/notifications', { headers: { Authorization: `Bearer ${token}` } })
+        axios.get(``),
+        axios.get(``, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(``, { headers: { Authorization: `Bearer ${token}` } })
       ]);
       setBlogs(blogsRes.data);
       setAdmin(adminRes.data);
@@ -40,7 +41,7 @@ const Dashboard = () => {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/blogs/${id}`, {
+      await axios.delete(`${API_URL}/api/blogs/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchDashboardData();
@@ -60,7 +61,7 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/profile-picture', formData, {
+      await axios.post(``, formData, {
         headers: { 
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}` 
@@ -82,7 +83,7 @@ const Dashboard = () => {
     }
     try {
       const token = localStorage.getItem('token');
-      await axios.put('http://localhost:5000/api/profile-name', { displayName: newName }, {
+      await axios.put(``, { displayName: newName }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchDashboardData();
@@ -97,7 +98,7 @@ const Dashboard = () => {
     if (!replyText.trim()) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/comments/${commentId}/reply`, { adminReply: replyText }, {
+      await axios.put(`${API_URL}/api/comments/${commentId}/reply`, { adminReply: replyText }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setReplyText('');
@@ -120,7 +121,7 @@ const Dashboard = () => {
         <div style={{ position: 'relative' }}>
           {admin?.profilePicture ? (
             <img 
-              src={`http://localhost:5000${admin.profilePicture}`} 
+              src={`${API_URL}${admin.profilePicture}`} 
               alt="Profile" 
               style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--surface-border)' }}
             />
@@ -187,7 +188,7 @@ const Dashboard = () => {
           {blogs.map(blog => (
             <div key={blog.id} className="glass-panel blog-card">
               {blog.imageUrl && (
-                <img src={`http://localhost:5000${blog.imageUrl}`} alt={blog.title} className="blog-image" />
+                <img src={`${API_URL}${blog.imageUrl}`} alt={blog.title} className="blog-image" />
               )}
               <div className="blog-content" style={{ padding: '1rem' }}>
                 <h3 style={{ color: 'var(--text-primary)' }}>{blog.title}</h3>
@@ -197,7 +198,7 @@ const Dashboard = () => {
                 <div className="flex-between" style={{ borderTop: '1px solid var(--surface-border)', paddingTop: '1rem' }}>
                   <div className="blog-meta" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     {blog.admin?.profilePicture ? (
-                      <img src={`http://localhost:5000${blog.admin.profilePicture}`} alt="author" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
+                      <img src={`${API_URL}${blog.admin.profilePicture}`} alt="author" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
                     ) : (
                       <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'linear-gradient(45deg, #f09433, #dc2743)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '10px' }}>
                         {(blog.admin?.username || blog.author || 'A')[0].toUpperCase()}

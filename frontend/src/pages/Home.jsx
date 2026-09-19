@@ -1,3 +1,4 @@
+import { API_URL } from '../config';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Heart, MessageCircle, Send } from 'lucide-react';
@@ -25,7 +26,7 @@ const Home = () => {
 
   const fetchBlogs = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/blogs');
+      const res = await axios.get(``);
       setBlogs(res.data);
     } catch (err) {
       console.error(err);
@@ -55,7 +56,7 @@ const Home = () => {
 
     try {
       const token = localStorage.getItem('publicToken');
-      const res = await axios.post(`http://localhost:5000/api/blogs/${blogId}/like`, {}, {
+      const res = await axios.post(`${API_URL}/api/blogs/${blogId}/like`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -86,7 +87,7 @@ const Home = () => {
 
     try {
       const token = localStorage.getItem('publicToken');
-      const res = await axios.post(`http://localhost:5000/api/blogs/${blogId}/comment`, { text }, {
+      const res = await axios.post(`${API_URL}/api/blogs/${blogId}/comment`, { text }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -123,7 +124,7 @@ const Home = () => {
               <header className="blog-header" style={{ padding: '1rem', display: 'flex', alignItems: 'center', borderBottom: '1px solid var(--surface-border)' }}>
                 {blog.admin?.profilePicture ? (
                   <img 
-                    src={`http://localhost:5000${blog.admin.profilePicture}`} 
+                    src={`${API_URL}${blog.admin.profilePicture}`} 
                     alt={blog.admin.username} 
                     style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', marginRight: '12px' }} 
                   />
@@ -139,7 +140,7 @@ const Home = () => {
 
               {/* Post Image */}
               {blog.imageUrl && (
-                <img src={`http://localhost:5000${blog.imageUrl}`} alt={blog.title} style={{ width: '100%', maxHeight: '600px', objectFit: 'cover' }} />
+                <img src={`${API_URL}${blog.imageUrl}`} alt={blog.title} style={{ width: '100%', maxHeight: '600px', objectFit: 'cover' }} />
               )}
 
 
@@ -207,7 +208,7 @@ const Home = () => {
                           ) : (
                             <div style={{ marginLeft: '1rem', marginTop: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'flex-start', animation: 'fadeIn 0.3s ease' }}>
                               {blog.admin?.profilePicture ? (
-                                <img src={`http://localhost:5000${blog.admin.profilePicture}`} alt="admin" style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />
+                                <img src={`${API_URL}${blog.admin.profilePicture}`} alt="admin" style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />
                               ) : (
                                 <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'var(--primary)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '10px', fontWeight: 'bold' }}>
                                   {(blog.admin?.username || 'A')[0].toUpperCase()}

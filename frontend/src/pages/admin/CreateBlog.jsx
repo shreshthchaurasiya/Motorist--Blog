@@ -1,3 +1,4 @@
+import { API_URL } from '../../config';
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +23,7 @@ const CreateBlog = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/blogs', formData, {
+      await axios.post(``, formData, {
         headers: { 
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
