@@ -14,7 +14,7 @@ const Login = ({ onLogin }) => {
     setLoading(true);
     
     try {
-      const res = await axios.post(``, { username, password });
+      const res = await axios.post(`${API_URL}/api/login`, { username, password });
       onLogin(res.data.token);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to login');
@@ -24,8 +24,8 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-      <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', padding: '2.5rem' }}>
+    <div className="container" style={{ padding: '2rem 1.5rem', maxWidth: '500px' }}>
+      <div className="glass-panel" style={{ padding: '2.5rem', textAlign: 'center' }}>
         <h2 className="text-center mb-8" style={{ fontSize: '1.75rem', color: 'var(--text-primary)' }}>Admin Login</h2>
         
         {error && <div style={{ color: 'var(--danger)', marginBottom: '1rem', textAlign: 'center', background: 'rgba(239, 68, 68, 0.1)', padding: '0.75rem', borderRadius: '8px' }}>{error}</div>}

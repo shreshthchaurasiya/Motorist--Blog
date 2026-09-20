@@ -1,10 +1,13 @@
 import { API_URL } from '../config';
 import { useState, useEffect } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Heart, MessageCircle, Share2 } from 'lucide-react';
 import AuthModal from '../components/AuthModal';
 
-const Home = () => {
+const Search = () => {
+  const [searchParams] = useSearchParams();
+  const q = searchParams.get('q') || '';
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [publicUser, setPublicUser] = useState(null);
@@ -49,7 +52,7 @@ const Home = () => {
     const user = localStorage.getItem('publicUser');
     if (user) setPublicUser(JSON.parse(user));
     fetchBlogs();
-  }, []);
+  }, [q]);
 
   // Scroll to blog from URL param after blogs load
   useEffect(() => {
@@ -65,8 +68,9 @@ const Home = () => {
   }, [blogs]);
 
   const fetchBlogs = async () => {
+    setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/api/blogs`);
+      const res = await axios.get(`${API_URL}/api/blogs${q ? `?search=${q}` : ''}`);
       setBlogs(res.data);
     } catch (err) {
       console.error(err);
@@ -130,11 +134,7 @@ const Home = () => {
     } catch (err) { console.error(err); }
   };
 
-  // Extract unique tags from all blogs
-  const allTags = [...new Set(blogs.flatMap(b => b.tags || ['Motorist', 'Bikes', 'Review', 'Off-Road', 'Tips']))];
 
-  // Related articles = other blogs (first 3)
-  const relatedBlogs = [...blogs].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)).slice(0, 3);
 
   if (loading) {
     return (
@@ -146,9 +146,12 @@ const Home = () => {
 
   return (
     <>
-      <div className="home-layout">
+      <div className="home-layout" style={{ maxWidth: '800px', margin: '0 auto' }}>
         {/* ===== MAIN FEED ===== */}
-        <main>
+        <main style={{ width: '100%' }}>
+          <h2 style={{ marginBottom: '1.5rem', color: 'var(--text-primary)', borderBottom: '1px solid var(--surface-border)', paddingBottom: '1rem' }}>
+            Search Results for: <span style={{ color: 'var(--primary-light)' }}>"{q}"</span>
+          </h2>
           {blogs.length === 0 ? (
             <div className="glass-panel" style={{ padding: '4rem 2rem', textAlign: 'center' }}>
               <h3 style={{ color: 'var(--text-secondary)', fontWeight: 400 }}>No posts published yet.</h3>
@@ -365,12 +368,12 @@ const Home = () => {
                     )}
 
                     {/* Comment Input */}
-                    <div className="comment-input-row" style={{ borderTop: '1px solid var(--surface-border)', padding: '0.9rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ borderTop: '1px solid var(--surface-border)', padding: '0.9rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                       {/* Current user avatar */}
                       <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: publicUser ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'var(--surface-2)', border: '2px solid var(--surface-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '0.8rem', fontWeight: '700', flexShrink: 0 }}>
                         {publicUser ? publicUser.name?.[0]?.toUpperCase() : '?'}
                       </div>
-                      <form onSubmit={(e) => handleComment(e, blog.id)} style={{ flex: 1, display: 'flex', alignItems: 'center', background: 'var(--surface-2)', borderRadius: '24px', border: '1px solid var(--surface-border)', padding: '0.45rem 0.45rem 0.45rem 1rem', gap: '0.5rem', transition: 'border-color 0.2s', minWidth: 0 }}
+                      <form onSubmit={(e) => handleComment(e, blog.id)} style={{ flex: 1, display: 'flex', alignItems: 'center', background: 'var(--surface-2)', borderRadius: '24px', border: '1px solid var(--surface-border)', padding: '0.45rem 0.45rem 0.45rem 1rem', gap: '0.5rem', transition: 'border-color 0.2s' }}
                         onFocus={e => e.currentTarget.style.borderColor = 'var(--primary)'}
                         onBlur={e => e.currentTarget.style.borderColor = 'var(--surface-border)'}
                       >
@@ -382,7 +385,7 @@ const Home = () => {
                           placeholder={publicUser ? `Comment as ${publicUser.name}...` : 'Login to comment...'}
                           autoComplete="off"
                           onClick={() => { if (!publicUser) requireAuth('comment', blog.id); }}
-                          style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-primary)', fontFamily: 'inherit', fontSize: '0.875rem', minWidth: 0 }}
+                          style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-primary)', fontFamily: 'inherit', fontSize: '0.875rem' }}
                         />
                         <button
                           type="submit"
@@ -399,42 +402,6 @@ const Home = () => {
             })
           )}
         </main>
-
-        {/* ===== SIDEBAR ===== */}
-        <aside className="sidebar">
-          {/* Related Articles */}
-          <div className="sidebar-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span className="sidebar-title" style={{ margin: 0 }}>Related Articles</span>
-            </div>
-            {relatedBlogs.length === 0 ? (
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem' }}>No related articles yet.</p>
-            ) : (
-              relatedBlogs.map(blog => (
-                <div 
-                  key={blog.id} 
-                  className="related-item" 
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    const el = document.getElementById(`blog-${blog.id}`);
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }}
-                >
-                  {blog.imageUrl ? (
-                    <img src={`${API_URL}${blog.imageUrl}`} alt={blog.title} className="related-thumb" />
-                  ) : (
-                    <div className="related-thumb-placeholder">Blog</div>
-                  )}
-                  <div className="related-info">
-                    <h4>{blog.title}</h4>
-                    <span>{new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-        </aside>
       </div>
 
 
@@ -472,4 +439,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Search;

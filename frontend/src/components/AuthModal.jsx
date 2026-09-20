@@ -39,7 +39,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess, initialName = '', initialPhone 
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post(``, { phoneNumber: phone, password });
+      const res = await axios.post(`${API_URL}/api/users/login`, { phoneNumber: phone, password });
       localStorage.setItem('publicToken', res.data.token);
       localStorage.setItem('publicUser', JSON.stringify(res.data.user));
       onSuccess(res.data.user);
@@ -62,7 +62,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess, initialName = '', initialPhone 
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post(``, { phoneNumber: phone, name, password });
+      const res = await axios.post(`${API_URL}/api/users/register`, { phoneNumber: phone, name, password });
       localStorage.setItem('publicToken', res.data.token);
       localStorage.setItem('publicUser', JSON.stringify(res.data.user));
       onSuccess(res.data.user);

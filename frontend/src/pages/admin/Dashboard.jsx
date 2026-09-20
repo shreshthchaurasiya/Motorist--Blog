@@ -18,9 +18,9 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       const [blogsRes, adminRes, notifRes] = await Promise.all([
-        axios.get(``),
-        axios.get(``, { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(``, { headers: { Authorization: `Bearer ${token}` } })
+        axios.get(`${API_URL}/api/blogs`),
+        axios.get(`${API_URL}/api/me`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${API_URL}/api/notifications`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
       setBlogs(blogsRes.data);
       setAdmin(adminRes.data);
@@ -61,7 +61,7 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post(``, formData, {
+      await axios.post(`${API_URL}/api/profile-picture`, formData, {
         headers: { 
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}` 
@@ -83,7 +83,7 @@ const Dashboard = () => {
     }
     try {
       const token = localStorage.getItem('token');
-      await axios.put(``, { displayName: newName }, {
+      await axios.put(`${API_URL}/api/profile-name`, { displayName: newName }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchDashboardData();

@@ -139,7 +139,19 @@ app.put('/api/profile-name', authMiddleware, async (req, res) => {
 
 // Blog Routes
 app.get('/api/blogs', async (req, res) => {
+  const { search } = req.query;
+  let where = {};
+  if (search) {
+    where = {
+      OR: [
+        { title: { contains: search, mode: 'insensitive' } },
+        { content: { contains: search, mode: 'insensitive' } }
+      ]
+    };
+  }
+
   const blogs = await prisma.blog.findMany({ 
+    where,
     orderBy: { createdAt: 'desc' },
     include: { 
       admin: { select: { username: true, displayName: true, profilePicture: true } },

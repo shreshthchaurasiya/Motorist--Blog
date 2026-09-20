@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Home from './pages/Home';
+import Search from './pages/Search';
 import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import CreateBlog from './pages/admin/CreateBlog';
@@ -54,14 +55,13 @@ function App() {
   return (
     <Router>
       <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
-      <div className="container">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/admin" element={!isAuthenticated ? <AdminLogin onLogin={handleLogin} /> : <Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/admin" replace />} />
-          <Route path="/create" element={isAuthenticated ? <CreateBlog /> : <Navigate to="/admin" replace />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/admin" element={!isAuthenticated ? <AdminLogin onLogin={handleLogin} /> : <Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/admin" replace />} />
+        <Route path="/create" element={isAuthenticated ? <CreateBlog /> : <Navigate to="/admin" replace />} />
+      </Routes>
     </Router>
   );
 }

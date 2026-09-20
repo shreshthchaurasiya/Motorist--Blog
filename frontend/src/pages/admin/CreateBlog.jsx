@@ -23,7 +23,7 @@ const CreateBlog = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post(``, formData, {
+      await axios.post(`${API_URL}/api/blogs`, formData, {
         headers: { 
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
@@ -39,7 +39,7 @@ const CreateBlog = () => {
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div className="container" style={{ padding: '2rem 1.5rem', maxWidth: '800px' }}>
       <h1 style={{ color: 'var(--text-primary)', marginBottom: '2rem' }}>Write a New Blog</h1>
       
       <div className="glass-panel" style={{ padding: '2rem' }}>
